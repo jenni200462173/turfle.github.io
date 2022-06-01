@@ -1,4 +1,4 @@
-import { WORDS } from "./words.js";
+import { dictionary, WORDS } from "./words.js";
 
 const NUMBER_OF_GUESSES = 6;
 let guessesRemaining = NUMBER_OF_GUESSES;
@@ -56,6 +56,7 @@ function checkGuess () {
     let row = document.getElementsByClassName("letter-row")[6 - guessesRemaining]
     let guessString = ''
     let rightGuess = Array.from(rightGuessString)
+    
 
     for (const val of currentGuess) {
         guessString += val
@@ -66,12 +67,15 @@ function checkGuess () {
         return
     }
 
-    if (!WORDS.includes(guessString)) {
+    if (!WORDS.includes(guessString) && !dictionary.includes(guessString)) {
         toastr.error("Word not in list!")
         return
     }
+    if (!dictionary.includes(guessString)) {
+        showAlert("e")
+        return
+    }
 
-    
     for (let i = 0; i < 5; i++) {
         let letterColor = ''
         let box = row.children[i]
@@ -80,19 +84,20 @@ function checkGuess () {
         let letterPosition = rightGuess.indexOf(currentGuess[i])
         // is letter in the correct guess
         if (letterPosition === -1) {
-            letterColor = 'grey'
+            // brown for not correct
+            letterColor = '#7c5e42'
         } else {
             // now, letter is definitely in word
             // if letter index and right guess index are the same
             // letter is in the right position 
             if (currentGuess[i] === rightGuess[i]) {
-                // shade green 
-                letterColor = 'green'
+                // shade green for correct spot and correct letter 
+                letterColor = '#19A753'
             } else {
-                // shade box yellow containg correct
-                letterColor = 'yellow'
+                //yellow for correct letter but wrong place
+                letterColor = 'rgb(249, 255, 190)'
             }
-
+        
             rightGuess[letterPosition] = "#"
         }
 
@@ -104,8 +109,9 @@ function checkGuess () {
             box.style.backgroundColor = letterColor
             shadeKeyBoard(letter, letterColor)
         }, delay)
-    }
 
+    }
+    
     if (guessString === rightGuessString) {
         toastr.success("You guessed right! Game over!")
         guessesRemaining = 0
